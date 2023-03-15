@@ -42,8 +42,12 @@ class Registre extends Controller
      
         $donne=[$num_arriv,$date_arriv,$id_patient,$verf_exam,$verf_fact,$obs_fact,$obs_exam];
         $sqlInsert="INSERT INTO crdtpat.REGISTRE (NUM_ARRIV,DATE_ARRIV,ID_PATIENT,VERF_EXAM,LAST_UPDATE,VERF_FACT,OBS_EXAM,OBS_FACT) values (?,TO_DATE(?,'dd-mm-yyyy'),?,?,sysdate,?,?,?)";
+        
+        $sql="UPDATE crdtpat.PATIENT SET LAST_UPDATE=sysdate WHERE ID_PATIENT='".$id_patient."' ";
         try {
             $requette=DB::insert($sqlInsert,$donne);
+            $requetteUp=DB::update($sql);
+
             $resultat=[
                 "etat"=>'success',
                 "message"=>"Numéro de journal d'arrivée : ".$num_arriv,
