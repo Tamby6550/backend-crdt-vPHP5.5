@@ -316,3 +316,5 @@ Route::get("getExamenJour/{date_facture}","Rapport@getExamenJour");
 
 //Graphe
 Route::get("getChartCategorie","Graphe@getChartCategorie");
+Route::get("getRechercheChart/{date1}&{date2}","Graphe@getRechercheChart");
+Route::get("getStatAcceuil","Graphe@getStatAcceuil");
