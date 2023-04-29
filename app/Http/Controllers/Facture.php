@@ -318,6 +318,7 @@ class Facture extends Controller
         $nom_client = $req->input("nom_client");
         $numero_arr = $req->input("numero_arr");
         $date_arr = $req->input("date_arr");
+        $pec = $req->input("pec");
 
         
         //Ny Type facture de avy @facture fa tsy patient eto
@@ -347,6 +348,9 @@ class Facture extends Controller
         if ($nom_client!="")          {
             $sql=$sql." AND (SELECT bill.CLIENT   FROM MIANDRALITINA.BILLING1 bill WHERE NUM_FACT=RRF.NUM_FACT  AND upper(bill.CLIENT) 
             like upper('%".$nom_client."%') ) like upper('%".$nom_client."%')";
+        }
+        if ($pec)   {
+            $sql=$sql." AND (SELECT bill.PEC   FROM MIANDRALITINA.BILLING1 bill WHERE NUM_FACT=RRF.NUM_FACT  AND bill.PEC>0) >0";
         }
 
         if ($numero_arr!="")    {$sql=$sql." AND  R.NUM_ARRIV='".$numero_arr."' ";}
