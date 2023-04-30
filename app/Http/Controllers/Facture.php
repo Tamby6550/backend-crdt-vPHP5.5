@@ -319,6 +319,8 @@ class Facture extends Controller
         $numero_arr = $req->input("numero_arr");
         $date_arr = $req->input("date_arr");
         $pec = $req->input("pec");
+        $date_debut = $req->input("date_debut");
+        $date_fin = $req->input("date_fin");
 
         
         //Ny Type facture de avy @facture fa tsy patient eto
@@ -345,16 +347,26 @@ class Facture extends Controller
         if ($date_facture!="")        {$sql=$sql." AND to_char(RRF.DATE_FACTURE,'DD/MM/YYYY')='".$date_facture."'";} 
         if ($nom_patient!="")          {$sql=$sql." AND upper(initcap(P.NOM||' '||nvl(P.PRENOM,' '))) like upper('%".$nom_patient."%')  ";}
 
-        if ($nom_client!="")          {
+         //rehefa recherche par client fotsiny
+        if ($nom_client!="" && $date_debut =="" && $date_fin =="")          {
             $sql=$sql." AND (SELECT bill.CLIENT   FROM MIANDRALITINA.BILLING1 bill WHERE NUM_FACT=RRF.NUM_FACT  AND upper(bill.CLIENT) 
             like upper('%".$nom_client."%') ) like upper('%".$nom_client."%')";
         }
+
+        //Recherche izay misy prise en charge
         if ($pec)   {
             $sql=$sql." AND (SELECT bill.PEC   FROM MIANDRALITINA.BILLING1 bill WHERE NUM_FACT=RRF.NUM_FACT  AND bill.PEC>0) >0";
         }
 
         if ($numero_arr!="")    {$sql=$sql." AND  R.NUM_ARRIV='".$numero_arr."' ";}
         if ($date_arr!="")     {$sql=$sql." AND R.DATE_ARRIV=TO_DATE('".$date_arr."','dd-mm-yyyy') ";}
+
+        //rehefa misafidy ny recherche entre deux date
+        if ($date_debut !="" && $date_fin !="" && $nom_client!="")     {
+            $sql=$sql." AND (SELECT bill.CLIENT   FROM MIANDRALITINA.BILLING1 bill WHERE NUM_FACT=RRF.NUM_FACT  AND upper(bill.CLIENT) 
+            like upper('%".$nom_client."%') ) like upper('%".$nom_client."%') AND  R.DATE_ARRIV>=TO_DATE('".$date_debut."','dd-mm-yyyy') and R.DATE_ARRIV<=TO_DATE('".$date_fin."','dd-mm-yyyy')";
+        }
+
 
         $sql = $sql ." ORDER BY  RRF.NUM_FACT DESC";
         $req=DB::select($sql); 
