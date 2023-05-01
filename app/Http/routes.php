@@ -278,8 +278,8 @@ Route::get("getMtRecettejour/{date_facture}","Rapport@getMtRecettejour");
 Route::get("getRecetteJour/{starts}&{ends}&{date_facture}","Rapport@getRecetteJour");
 
 //Virement du jour
-Route::get("getMtVirementjour/{date_facture}","Rapport@getMtVirementjour");
-Route::get("getVirementJour/{starts}&{ends}&{date_facture}","Rapport@getVirementJour");
+Route::get("getMtVirementjour/{date_debut}&{date_fin}","Rapport@getMtVirementjour");
+Route::get("getVirementJour/{starts}&{ends}&{date_debut}&{date_fin}","Rapport@getVirementJour");
 
 //Stat examen
 Route::post("getStatExamen","Rapport@getStatExamen");

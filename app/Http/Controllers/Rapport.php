@@ -130,13 +130,14 @@ class Rapport extends Controller
 
 
      // -------------------------------------------Virement du jour---------------------------------------//
-     public function getMtVirementjour($date_facture)
+     public function getMtVirementjour($date_debut,$date_fin)
     {
         $sql1="SELECT min(ID) as starts,max(ID) as ends,count(id) as counts,
         trim(NVL(to_char(sum(MONTANT),'999G999G999G999G999','NLS_NUMERIC_CHARACTERS=''. '''),0)) as montant
         FROM (SELECT ROWNUM as ID,to_char(DATE_REGLEMENT,'DD/MM/YYYY') as DATE_REGLMT,A.NUM_FACT as NUM_FACT,PATIENT,MIANDRALITINA.VIEW_CLIENT(CODE_CLIENT) as CLIENT,
         MIANDRALITINA.VIEW_REGLEMENT(A.REGLEMENT_ID) as REGLEMNT,MONTANT FROM MIANDRALITINA.REGLEMENT_DETAILS A,MIANDRALITINA.FACTURE B 
-        WHERE A.NUM_FACT=B.NUM_FACT AND TYPE_FACTURE='0' AND A.REGLEMENT_ID='3' AND to_char(DATE_REGLEMENT,'DD-MM-YYYY')='".$date_facture."'   ORDER BY A.NUM_FACT ASC)";
+        WHERE A.NUM_FACT=B.NUM_FACT AND TYPE_FACTURE='0' AND A.REGLEMENT_ID='3' AND 
+        trunc(DATE_REGLEMENT)>=to_date('".$date_debut."','dd/mm/yyyy') and trunc(DATE_REGLEMENT)<=to_date('".$date_fin."','dd/mm/yyyy')   ORDER BY A.NUM_FACT ASC)";
         $req1=DB::select($sql1); 
 
         $data1=array();
@@ -157,7 +158,7 @@ class Rapport extends Controller
         ]; 
         return response()->json($resultat);
     }
-    public function getVirementJour($starts,$ends,$date_facture)
+    public function getVirementJour($starts,$ends,$date_debut,$date_fin)
     {    
         $sql2="SELECT ID,DATE_REGLMT,NUM_FACT,PATIENT,CLIENT,REGLEMNT,NUM_ARRIV,DATE_ARRIV,trim(to_char(MONTANT,'999G999G999G999G999','NLS_NUMERIC_CHARACTERS=''. ''')) as MONTANT FROM 
         ( SELECT ROWNUM as ID,to_char(DATE_REGLEMENT,'DD/MM/YYYY') as DATE_REGLMT,A.NUM_FACT as NUM_FACT,
@@ -165,7 +166,7 @@ class Rapport extends Controller
         MIANDRALITINA.VIEW_NUM_ARRIV(A.NUM_FACT) AS NUM_ARRIV,MIANDRALITINA.VIEW_DATE_ARRIV(A.NUM_FACT) AS DATE_ARRIV,
         MONTANT 
         FROM MIANDRALITINA.REGLEMENT_DETAILS A,MIANDRALITINA.FACTURE B WHERE 
-        A.NUM_FACT=B.NUM_FACT AND TYPE_FACTURE='0' AND A.REGLEMENT_ID='3' AND to_char(DATE_REGLEMENT,'DD-MM-YYYY')='".$date_facture."' ) 
+        A.NUM_FACT=B.NUM_FACT AND TYPE_FACTURE='0' AND A.REGLEMENT_ID='3' AND  trunc(DATE_REGLEMENT)>=to_date('".$date_debut."','dd/mm/yyyy') and trunc(DATE_REGLEMENT)<=to_date('".$date_fin."','dd/mm/yyyy')  ) 
         WHERE ID>='".$starts."' and ID <='".$ends."' ORDER BY NUM_FACT ASC";
         $req2=DB::select($sql2); 
 
