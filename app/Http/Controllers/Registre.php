@@ -68,7 +68,7 @@ class Registre extends Controller
         $sqlRegistre="SELECT  to_char(sysdate,'MM/DD/YYYY')  as jourj, to_char(DATE_ARR,'DD/MM/YYYY') as date_arr,to_char(DATE_ARR,'MM/DD/YYYY') as date_arrive,NUMERO as numero,
         ID_PATIENT as id_patient,TYPE_PATIENT as type_pat,VERF_EXAMEN as verf_exam,VERF_FACT as verf_fact,
         NOM as nom,to_char(DATE_NAISS,'DD/MM/YYYY')  as date_naiss,TELEPHONE as telephone FROM CRDTPAT.LISTEREGISTRE 
-        WHERE to_char(DATE_ARR,'DD/MM/YYYY')=to_char(sysdate,'DD/MM/YYYY') or VERF_EXAMEN=0 or VERF_EXAMEN=1 order by LAST_UPDATE ASC";
+        WHERE to_char(DATE_ARR,'DD/MM/YYYY')=to_char(sysdate,'DD/MM/YYYY') or VERF_EXAMEN=0 or VERF_EXAMEN=1 order by DATE_ARR,NUMERO DESC";
         $req=DB::select($sqlRegistre); 
 
         return response()->json($req);

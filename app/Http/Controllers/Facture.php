@@ -77,33 +77,36 @@ class Facture extends Controller
         $tarifNouveau = $req->input("tarif");
         $a=array();
         $verf=0;
-        $data1=array();
+        // $data1=array();
         $nouveauMontant=0;
 
         //Mis a jour Type patient
         $sqlUpdatePatient="UPDATE crdtpat.PATIENT SET TYPE_PATIENT=trim(?),LAST_UPDATE=sysdate WHERE ID_PATIENT=?";
-
+        $test=array();
         $sqlUpdate="UPDATE MIANDRALITINA.EXAMEN_DETAILS SET MONTANT=? WHERE NUM_ARRIV=? AND  DATE_ARRIV=TO_DATE(?,'dd-mm-yyyy') AND trim(upper(LIB_EXAMEN)) = trim(upper(?))";
-        for ($i=0; $i < count($donneExam); $i++) { 
+        for ($i=0; $i <count($donneExam); $i++) { 
+            $data1=array();
             $lib_examen = $donneExam[$i]['lib_examen'];
             $code_tarif = $donneExam[$i]['code_tarif'];
             $types=$donneExam[$i]['type'];
             //Maka ny montant tarif vao2
             $sql="SELECT MONTANT as montant FROM MIANDRALITINA.EXAMEN ex WHERE CODE_TARIF='".$code_tarif."' AND trim(upper(LIBELLE)) = trim(upper('".$lib_examen."'))  AND TARIF='".$tarifNouveau."' AND trim(upper(TYPES)) = trim(upper('".$types."'))";
             $req1=DB::select($sql);
+            // $montant_modif = collect($req1)->pluck('montant');
             foreach($req1 as $row){
-                $data1=$row;
-            }
+                    $data1=$row;
+                }
             foreach($data1 as $row){
                 $data1=$row;
             }
             $nouveauMontant=$data1;
+            array_push($test,$data1);
             
             $a[$i]=$nouveauMontant;
             // //Manova ny table examens details
             $donne=[$a[$i],$num_arriv,$date_arriv,$lib_examen];
             try {
-                $req2=DB::update($sqlUpdate,$donne);
+                // $req2=DB::update($sqlUpdate,$donne);
                 $verf=1;
             } catch (\Throwable $th) {
                 $verf=0;
@@ -111,14 +114,16 @@ class Facture extends Controller
             }
         }
         if ($verf==1) {
-            $requette=DB::update($sqlUpdatePatient,[$tarifNouveau,$id_patient]);
+            // $requette=DB::update($sqlUpdatePatient,[$tarifNouveau,$id_patient]);
             $resultat=[
                 "etat"=>'success',
                 "message"=>"Modification tarif éfféctuée avec succés ",
                 'num_arriv'=>$num_arriv, 
                 'date_arriv'=>$date_arriv, 
                 'donneExam'=>$donneExam[0]['lib_examen'],
-                'donneExam'=>count($donneExam)
+                'nouveau'=>$nouveauMontant,
+                'test'=>$test,
+                
             ];
         }
         else{

@@ -95,11 +95,12 @@ class ExamenDuJour extends Controller
                 if ( $libelle_exams[$i] !="CRANE 1 INC") {
                 if ( $libelle_exams[$i] !="CRANE 2 INC") {
                 if ( $libelle_exams[$i] !="CRANE SHULLER ( les 2 côtés )") {
+                if ( $libelle_exams[$i] !="PRODUIT DE CONTRTASTE SCAN") {
                         if ( $cr_names[$i] =='-') {
                             $verf=true;
                         }
                     }
-                }}}}}
+                }}}}}}
                 
         }
         
