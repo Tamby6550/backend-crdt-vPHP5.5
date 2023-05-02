@@ -44,7 +44,7 @@ class Rapport extends Controller
         MIANDRALITINA.VIEW_PANO(NUM_FACT) as PANNO,MIANDRALITINA.VIEW_ECG(NUM_FACT) as ECG,MIANDRALITINA.VIEW_AUTRES(NUM_FACT) as PRODUIT,
         MIANDRALITINA.VIEW_RADIO(NUM_FACT) as RADIO,MIANDRALITINA.VIEW_SCAN(NUM_FACT) as SCAN,OBSERVATION 
         FROM MIANDRALITINA.BILLING1 WHERE to_char(DATE_EXAMEN,'DD-MM-YYYY')='".$date_facture."' 
-        and ( to_number(substr(NUM_FACT,7,4))>='".$starts."' and to_number(substr(NUM_FACT,7,4))<='".$ends."') ORDER BY NUM_ARRIV ASC";
+        and ( to_number(substr(NUM_FACT,7,4))>='".$starts."' and to_number(substr(NUM_FACT,7,4))<='".$ends."') ORDER BY NUM_FACT ASC";
         $req2=DB::select($sql2); 
 
         return response()->json(['Data'=>$req2]);
@@ -121,7 +121,7 @@ class Rapport extends Controller
         MONTANT 
         FROM MIANDRALITINA.REGLEMENT_DETAILS A,MIANDRALITINA.FACTURE B  WHERE 
         A.NUM_FACT=B.NUM_FACT AND TYPE_FACTURE='0' AND A.REGLEMENT_ID in ('1','2') AND to_char(DATE_REGLEMENT,'DD-MM-YYYY')='".$date_facture."' ) 
-        WHERE ID>='".$starts."' and ID <='".$ends."' ORDER BY NUM_ARRIV ASC";
+        WHERE ID>='".$starts."' and ID <='".$ends."' ORDER BY NUM_FACT ASC";
         $req2=DB::select($sql2); 
 
         return response()->json(['Data'=>$req2]);
@@ -545,9 +545,9 @@ class Rapport extends Controller
                 ELSE 'Effectué'
         END STATUS_EXAM,
         CASE
-                WHEN reg.VERF_FACT=0 THEN 'Non facturé'
-                WHEN reg.VERF_FACT=1 THEN 'Non regler'
-                ELSE 'Réglé'
+                WHEN reg.VERF_FACT=0 THEN 'Non'
+                WHEN reg.VERF_FACT=1 THEN 'Oui'
+                ELSE 'Oui'
         END STATUS_FACT,
         (SELECT distinct bill.MONTANT_PATIENT   FROM MIANDRALITINA.BILLING1 bill WHERE bill.DATE_ARRIV=reg.DATE_ARRIV AND bill.NUM_ARRIV=reg.NUM_ARRIV ) as totalpat,
         (SELECT distinct bill.MONTANT_PEC   FROM MIANDRALITINA.BILLING1 bill WHERE  bill.DATE_ARRIV=reg.DATE_ARRIV AND bill.NUM_ARRIV=reg.NUM_ARRIV ) as totalpec,

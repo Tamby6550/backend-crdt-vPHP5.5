@@ -85,7 +85,6 @@ class Facture extends Controller
         $test=array();
         $sqlUpdate="UPDATE MIANDRALITINA.EXAMEN_DETAILS SET MONTANT=? WHERE NUM_ARRIV=? AND  DATE_ARRIV=TO_DATE(?,'dd-mm-yyyy') AND trim(upper(LIB_EXAMEN)) = trim(upper(?))";
         for ($i=0; $i <count($donneExam); $i++) { 
-            $data1=array();
             $lib_examen = $donneExam[$i]['lib_examen'];
             $code_tarif = $donneExam[$i]['code_tarif'];
             $types=$donneExam[$i]['type'];
@@ -106,15 +105,17 @@ class Facture extends Controller
             // //Manova ny table examens details
             $donne=[$a[$i],$num_arriv,$date_arriv,$lib_examen];
             try {
-                // $req2=DB::update($sqlUpdate,$donne);
+                $req2=DB::update($sqlUpdate,$donne);
                 $verf=1;
+                $data1=array();
+
             } catch (\Throwable $th) {
                 $verf=0;
                 break;
             }
         }
         if ($verf==1) {
-            // $requette=DB::update($sqlUpdatePatient,[$tarifNouveau,$id_patient]);
+            $requette=DB::update($sqlUpdatePatient,[$tarifNouveau,$id_patient]);
             $resultat=[
                 "etat"=>'success',
                 "message"=>"Modification tarif éfféctuée avec succés ",
@@ -141,6 +142,7 @@ class Facture extends Controller
         
         $resultat=array();
         $num_facture = $req->input("num_facture");
+        $ref_carte = $req->input("ref_carte");
         $date_facture = $req->input("date_facture");
         $patient = $req->input("patient");
         $type = $req->input("type");
@@ -177,8 +179,8 @@ class Facture extends Controller
         $montant_pech = round($montant_pech, 2);
 
         
-        $sqlInsertFacture="INSERT INTO MIANDRALITINA.FACTURE (NUM_FACT,DATY,TYPE_CLIENT,TYPE_FACTURE,PATIENT,REGLEMENT_ID,REMISE,PEC,RIB,CODE_CLIENT,CODE_PRESC,MONTANT_BRUTE,MONTANT_NET,MONTANT_PATIENT,MONTANT_PEC) 
-        values ('".$num_facture."',sysdate,'".$type."','".$avoir."','".$patient."','".$reglement_id."','".$remise."','".$pec."','".$rib."','".$code_cli."','".$code_presc."','".$montant_brute."','".$montant_net."','".$montant_patient."','".$montant_pech."')";
+        $sqlInsertFacture="INSERT INTO MIANDRALITINA.FACTURE (NUM_FACT,DATY,TYPE_CLIENT,TYPE_FACTURE,PATIENT,REGLEMENT_ID,REMISE,PEC,RIB,CODE_CLIENT,CODE_PRESC,MONTANT_BRUTE,MONTANT_NET,MONTANT_PATIENT,MONTANT_PEC,REF_CARTE) 
+        values ('".$num_facture."',sysdate,'".$type."','".$avoir."','".$patient."','".$reglement_id."','".$remise."','".$pec."','".$rib."','".$code_cli."','".$code_presc."','".$montant_brute."','".$montant_net."','".$montant_patient."','".$montant_pech."','".$ref_carte."')";
         
 
         $sqlUpdateExamen="UPDATE MIANDRALITINA.EXAMEN_DETAILS SET NUM_FACT=? WHERE NUM_ARRIV=? AND  DATE_ARRIV=TO_DATE(?,'dd-mm-yyyy') ";
@@ -448,6 +450,9 @@ class Facture extends Controller
         (SELECT STAT   FROM MIANDRALITINA.CLIENT WHERE CODE_CLIENT=bill.CODE_CLI) as STAT,
         (SELECT CIF   FROM MIANDRALITINA.CLIENT WHERE CODE_CLIENT=bill.CODE_CLI) as CIF,
         (SELECT NIF   FROM MIANDRALITINA.CLIENT WHERE CODE_CLIENT=bill.CODE_CLI) as NIF,
+        (SELECT trim(initcap(to_char(DATY,'DAY'))  ||' '|| to_char(DATY,'DD')  || ' ' || initcap(to_char(DATY,'MONTH'))|| ' ' ||
+        to_char(DATY,'YYYY') ) FROM MIANDRALITINA.Facture   WHERE NUM_FACT='".$num_facture."') as date_fact,
+        (SELECT ref_carte FROM MIANDRALITINA.Facture   WHERE NUM_FACT='".$num_facture."') as ref_carte,
         MONTANT_NET as net_mtnet,MONTANT_PEC as net_pec from MIANDRALITINA.BILLING1 bill where NUM_FACT='".$num_facture."'";
         $req=DB::select($sql); 
         foreach($req as $row){
