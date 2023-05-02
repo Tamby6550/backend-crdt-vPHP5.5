@@ -58,7 +58,7 @@ class ClientFact extends Controller
     {
         $data1=array();
         $sqlIdExam="SELECT nvl(count(code_client),0) as nbenreg FROM MIANDRALITINA.client ";
-        $sql = "SELECT code_client,nom,decode(DESCRIPTION,'null',' ',null,' ',DESCRIPTION) as description,rc,stat,cif,nif from MIANDRALITINA.client where ROWNUM <= 10 order by code_client  asc   ";
+        $sql = "SELECT code_client,nom,decode(DESCRIPTION,'null',' ',null,' ',DESCRIPTION) as description,rc,stat,cif,nif from MIANDRALITINA.client  order by code_client  asc   ";
         $req1=DB::select($sqlIdExam);
         $req2 = DB::select($sql);
         foreach($req1 as $row){

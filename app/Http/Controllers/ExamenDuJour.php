@@ -81,20 +81,26 @@ class ExamenDuJour extends Controller
     public function getPatientExamenEff($num_arriv,$date_arriv)
     {    
         $verf=false;
-        $sql1=" select cr_name,Type as type from MIANDRALITINA.EXAMEN_DETAILS where NUM_ARRIV='".$num_arriv."' AND DATE_ARRIV=TO_DATE('".$date_arriv."','dd-mm-yyyy') ";
+        $sql1=" select lib_examen,cr_name,Type as type from MIANDRALITINA.EXAMEN_DETAILS where NUM_ARRIV='".$num_arriv."' AND DATE_ARRIV=TO_DATE('".$date_arriv."','dd-mm-yyyy') ";
         $sql="SELECT ex.*,to_char(ex.DATE_EXAMEN,'DD/MM/YYYY') as date_exam FROM MIANDRALITINA.EXAMEN_DETAILS ex WHERE NUM_ARRIV='".$num_arriv."' AND DATE_ARRIV=TO_DATE('".$date_arriv."','dd-mm-yyyy') order by LIB_EXAMEN DESC";
         $req=DB::select($sql); 
         $req1=DB::select($sql1); 
         $cr_names = collect($req1)->pluck('cr_name');
         $types = collect($req1)->pluck('type');
+        $libelle_exams = collect($req1)->pluck('lib_examen');
         for ($i=0; $i < count($cr_names); $i++) { 
             if ($types[$i] !="ECG" ) {
                 if ( $types[$i] !="PANORAMIQUE DENTAIRE") {
+                if ( $libelle_exams[$i] !="DENTASCAN") {
+                if ( $libelle_exams[$i] !="CRANE 1 INC") {
+                if ( $libelle_exams[$i] !="CRANE 2 INC") {
+                if ( $libelle_exams[$i] !="CRANE SHULLER ( les 2 côtés )") {
                         if ( $cr_names[$i] =='-') {
                             $verf=true;
                         }
                     }
-                }
+                }}}}}
+                
         }
         
         $resultat=[

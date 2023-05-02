@@ -11,7 +11,7 @@ class Examen extends Controller
         $resultat=array();
         $data1=array();
         $sqlIdExam="SELECT nvl(max(ID_EXAMEN),0)+1 as nbenreg FROM miandralitina.EXAMEN ";
-        $sqlExam="SELECT ID_EXAMEN,nvl(LIBELLE,' ') as LIB,CODE_TARIF,TYPES,MONTANT,TARIF  FROM miandralitina.EXAMEN where ROWNUM <= 10 order by ID_EXAMEN ASC";
+        $sqlExam="SELECT ID_EXAMEN,nvl(LIBELLE,' ') as LIB,CODE_TARIF,TYPES,MONTANT,TARIF  FROM miandralitina.EXAMEN  order by ID_EXAMEN ASC";
         $req1=DB::select($sqlIdExam);
         $req2=DB::select($sqlExam); 
         foreach($req1 as $row){

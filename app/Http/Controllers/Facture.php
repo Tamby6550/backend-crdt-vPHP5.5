@@ -348,7 +348,7 @@ class Facture extends Controller
         if ($nom_patient!="")          {$sql=$sql." AND upper(initcap(P.NOM||' '||nvl(P.PRENOM,' '))) like upper('%".$nom_patient."%')  ";}
 
          //rehefa recherche par client fotsiny
-        if ($nom_client!="" && $date_debut =="" && $date_fin =="")          {
+        if ($nom_client!="" )          {
             $sql=$sql." AND (SELECT bill.CLIENT   FROM MIANDRALITINA.BILLING1 bill WHERE NUM_FACT=RRF.NUM_FACT  AND upper(bill.CLIENT) 
             like upper('%".$nom_client."%') ) like upper('%".$nom_client."%')";
         }
@@ -362,9 +362,8 @@ class Facture extends Controller
         if ($date_arr!="")     {$sql=$sql." AND R.DATE_ARRIV=TO_DATE('".$date_arr."','dd-mm-yyyy') ";}
 
         //rehefa misafidy ny recherche entre deux date
-        if ($date_debut !="" && $date_fin !="" && $nom_client!="")     {
-            $sql=$sql." AND (SELECT bill.CLIENT   FROM MIANDRALITINA.BILLING1 bill WHERE NUM_FACT=RRF.NUM_FACT  AND upper(bill.CLIENT) 
-            like upper('%".$nom_client."%') ) like upper('%".$nom_client."%') AND  R.DATE_ARRIV>=TO_DATE('".$date_debut."','dd-mm-yyyy') and R.DATE_ARRIV<=TO_DATE('".$date_fin."','dd-mm-yyyy')";
+        if ($date_debut !="" && $date_fin !="" )     {
+            $sql=$sql."  AND  R.DATE_ARRIV>=TO_DATE('".$date_debut."','dd-mm-yyyy') AND R.DATE_ARRIV<=TO_DATE('".$date_fin."','dd-mm-yyyy')";
         }
 
 
