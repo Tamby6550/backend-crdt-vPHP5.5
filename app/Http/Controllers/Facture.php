@@ -239,10 +239,14 @@ class Facture extends Controller
         $regle='0';
         $sqlInsertReglementId="INSERT INTO MIANDRALITINA.REGLEMENT_DETAILS(ID_REGLEMENT_DETAILS,NUM_FACT,REGLEMENT_ID,RIB,MONTANT,DATE_REGLEMENT,TYPE_RGLMT) 
         values ('".$num_facture.'-'.$reglement_id."','".$num_facture."','".$reglement_id."','".$rib."','".$montantreglement."',sysdate,'".$type_reglmnt."')";
-        try {
 
+        //Misupprimer ny reglement par defaut
+        $sqlDeleteReglementId="DELETE FROM MIANDRALITINA.REGLEMENT_DETAILS WHERE ID_REGLEMENT_DETAILS='".$num_facture."-0'";
+        try {
         //Insertion Reglement_Id
         $requetteRId=DB::insert($sqlInsertReglementId);
+
+        $requetteDeletereglementId_0=DB::delete($sqlDeleteReglementId);
 
         //Mijery ny reste, raha 0 de  payé zany hoe miova table registre
         $data1=array();
