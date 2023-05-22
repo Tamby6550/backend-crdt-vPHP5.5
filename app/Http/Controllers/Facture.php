@@ -206,9 +206,7 @@ class Facture extends Controller
             $resultat=[
                 "etat"=>'success',
                 "message"=>"Facture bien éfféctuée !",
-               
             ];
-
         } catch (\Throwable $th) {
             $resultat=[
                 "success"=>false, 
@@ -216,7 +214,6 @@ class Facture extends Controller
                 "erreur"=>$th
             ];
         }
-        
         return response()->json($resultat);
     }
 
@@ -237,14 +234,29 @@ class Facture extends Controller
         $date_arriv = $req->input("date_arriv");
 
         $regle='0';
+
         $sqlInsertReglementId="INSERT INTO MIANDRALITINA.REGLEMENT_DETAILS(ID_REGLEMENT_DETAILS,NUM_FACT,REGLEMENT_ID,RIB,MONTANT,DATE_REGLEMENT,TYPE_RGLMT) 
         values ('".$num_facture.'-'.$reglement_id."','".$num_facture."','".$reglement_id."','".$rib."','".$montantreglement."',sysdate,'".$type_reglmnt."')";
 
         //Misupprimer ny reglement par defaut
         $sqlDeleteReglementId="DELETE FROM MIANDRALITINA.REGLEMENT_DETAILS WHERE ID_REGLEMENT_DETAILS='".$num_facture."-0'";
         try {
-        //Insertion Reglement_Id
-        $requetteRId=DB::insert($sqlInsertReglementId);
+            // Véeifier s'il y un enregistrement
+            $sqlGetReglemnt_details="SELECT count(*) FROM MIANDRALITINA.REGLEMENT_DETAILS WHERE ID_REGLEMENT_DETAILS='".$num_facture.'-'.$reglement_id."' and TYPE_RGLMT='".$type_reglmnt."' AND MONTANT='".$montantreglement."' and REGLEMENT_ID='".$reglement_id."' ";
+            $getRg=array();
+            $reqgetReg=DB::select($sqlGetReglemnt_details); 
+            
+            foreach($reqgetReg as $row){
+                $getRg=$row;
+            }
+            foreach($getRg as $row){
+                $getRg=$row;
+            }
+            //S'il n'y a pas 
+            if ($getRg==0) {
+                //Insertion Reglement_Id
+                $requetteRId=DB::insert($sqlInsertReglementId);
+            }
 
         $requetteDeletereglementId_0=DB::delete($sqlDeleteReglementId);
 
@@ -270,14 +282,16 @@ class Facture extends Controller
                 "etat"=>'success',
                 "message"=>"Enregistrement bien éfféctuée avec facture réglé !",
                 'res'=>$sqlInsertReglementId ,
-                'regle'=>$regle
+                'regle'=>$regle,
+                'count'=>$getRg,
             ];
         }else{
             $resultat=[
                 "etat"=>'success',
                 "message"=>"Enregistrement bien éfféctuée !",
                 'res'=>$sqlInsertReglementId ,
-                'regle'=>$regle
+                'regle'=>$regle,
+                'count'=>$getRg,
                 
             ];
         }
@@ -295,7 +309,7 @@ class Facture extends Controller
 
     //Vef_examen dans registre est 2 et verf_fact = 1, facture non regler, le 3 dernier jour 
     public function getEffectFacture()
-    {    
+    {     
         //Ny Type facture de avy @facture fa tsy patient eto
         $sql="SELECT  R.NUM_ARRIV AS NUMERO,R.DATE_ARRIV AS DATE_ARR,R.ID_PATIENT AS ID_PATIENT,
         to_char(sysdate,'MM/DD/YYYY')  as jourj, to_char(R.DATE_ARRIV,'DD/MM/YYYY') as date_arr,to_char(R.DATE_ARRIV,'MM/DD/YYYY') as date_arrive,
@@ -315,7 +329,7 @@ class Facture extends Controller
         FROM CRDTPAT.REGISTRE R,CRDTPAT.PATIENT P ,MIANDRALITINA.RELIER_REGISTRE_FACTURE RRF
 		WHERE R.VERF_EXAM='2' AND R.VERF_FACT='1' AND
         R.ID_PATIENT=P.ID_PATIENT AND R.DATE_ARRIV=RRF.DATE_ARRIV AND R.NUM_ARRIV=RRF.NUM_ARRIV  
-        AND (trunc(RRF.DATE_FACTURE)>=trunc(sysdate-5) or (SELECT count(*)  FROM MIANDRALITINA.REGLEMENT_DETAILS WHERE NUM_FACT=RRF.NUM_FACT and REGLEMENT_ID<>'0')=0)
+        AND (trunc(RRF.DATE_FACTURE)>=trunc(sysdate) or (SELECT count(*)  FROM MIANDRALITINA.REGLEMENT_DETAILS WHERE NUM_FACT=RRF.NUM_FACT and REGLEMENT_ID<>'0')=0)
 		ORDER BY  RRF.NUM_FACT DESC";
         $req=DB::select($sql); 
         
